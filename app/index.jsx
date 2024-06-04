@@ -27,7 +27,11 @@ export default function App() {
               title="Kayıt Ol"
               containerStyle={[styles.button, { width: '100%', marginTop: 30 }]}
               handlePress={() => router.push('/sign-up')}            />
+                 <Link href="/gyms">
+            <Text>Tabları Göster</Text>
+          </Link>
         </View>
+     
         </ScrollView>
     </SafeAreaView>
   );
