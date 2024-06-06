@@ -55,3 +55,87 @@ export const fetchCoursePrices = async () => {
   const url = API_ENDPOINTS.PRICES;
   return await fetchData(url);
 };
+
+export const fetchPaymentTypes = async () => {
+  const url = API_ENDPOINTS.PAYMENT_TYPES;
+  return await fetchData(url);
+};
+export const fetchCourseId = async (CourseId) => {
+  const url = API_ENDPOINTS.COURSE_ID( CourseId);
+  console.log(`Fetching from URL: ${url}`);
+
+  return await fetchData(url);
+};
+export const fetchRegister = async (userData) => {
+  const url = API_ENDPOINTS.REGISTER;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      // Hata durumunda yapılacak işlemler
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    // Hata yakalama
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+export const fetchLogin = async (userData) => {
+  const url = API_ENDPOINTS.LOGIN;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      // Hata durumunda yapılacak işlemler
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    // Hata yakalama
+    console.error('Error:', error);
+    throw error;
+  }
+};
+
+export const fetchLogout = async () => {
+  const url = API_ENDPOINTS.LOGOUT;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      // Hata durumunda yapılacak işlemler
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    // Hata yakalama
+    console.error('Error:', error);
+    throw error;
+  }
+};

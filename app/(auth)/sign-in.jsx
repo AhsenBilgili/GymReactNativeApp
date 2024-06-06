@@ -4,55 +4,71 @@ import { SafeAreaView, StyleSheet } from 'react-native'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
 import { Link } from 'expo-router'
-
+import { fetchLogin } from '../../services/api';
+import { router } from 'expo-router'
 
 const SignIn = () => {
-  const [form,setForm]=useState({
+  const [form, setForm] = useState({
+    email: '',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    email:'',
-    password:''
-  })
-  const [isSubmitting, setisSubmitting] = useState(false)
-  const submit=()=>{}
+  // Giriş işlemini gerçekleştiren fonksiyon
+  const submit = async () => {
+    setIsSubmitting(true);
+    try {
+      // fetchLogin fonksiyonunu kullanarak giriş yap
+      const response = await fetchLogin({
+        email: form.email,
+        password: form.password
+      });
+      console.log('Success:', response);
+
+      if(response.token){
+        router.push('/gyms')
+      }
+      // Başarılı durumda yapılacaklar (örn. navigate etme, mesaj gösterme)
+    } catch (error) {
+      console.error('Error:', error);
+      // Hata durumunda yapılacaklar (örn. hata mesajı gösterme)
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
-        <ScrollView >
-          <View style={styles.viewContainer}>
-            <Text style={styles.text}>Giriş Yap</Text>
-           
-            <FormField
-                title="Email"
-                value={form.email}
-                handleChangeText={(e)=>setForm({...form,
-                  email:e
-                })}
-                keyboardType="email-address"
-            />
-            <FormField
-                title="Password"
-                value={form.password}
-                handleChangeText={(e)=>setForm({...form,
-                  password:e
-                })}
-            />
-            <CustomButton
-                title='Giriş Yap'
-                handlePress={submit}
-                isLoading={isSubmitting}
-
-            />
-            <View style={styles.signupContainer}>
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.text}>Giriş Yap</Text>
+          <FormField
+            title="Email"
+            value={form.email}
+            handleChangeText={(e) => setForm({ ...form, email: e })}
+            keyboardType="email-address"
+          />
+          <FormField
+            title="Password"
+            value={form.password}
+            handleChangeText={(e) => setForm({ ...form, password: e })}
+          />
+          <CustomButton
+            title='Giriş Yap'
+            handlePress={submit}
+            isLoading={isSubmitting}
+          />
+          <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Hesabın yok mu?</Text>
-            <Text style={styles.signupLink}>Kayıt Ol</Text>
+            <Link href="/signup" style={styles.signupLink}>Kayıt Ol</Link>
           </View>
-          </View>
-        </ScrollView>
-
+        </View>
+      </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default SignIn
+export default SignIn;
 
 
 const styles = StyleSheet.create({

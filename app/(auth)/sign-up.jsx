@@ -3,82 +3,86 @@ import React, { useState } from 'react'
 import { SafeAreaView, StyleSheet } from 'react-native'
 import FormField from '../components/FormField'
 import CustomButton from '../components/CustomButton'
-import { Link } from 'expo-router'
-
+import { fetchRegister } from '../../services/api'; // fetchRegister fonksiyonunu doğru yol ile içe aktarın
 
 const SignUp = () => {
-  const [form,setForm]=useState({
-    username:'',
-    email:'',
-    password:''
-  })
-  const [isSubmitting, setisSubmitting] = useState(false)
-  const submit=()=>{}
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const submit = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetchRegister({
+        userName: form.username,
+        email: form.email,
+        password: form.password
+      });
+      console.log('Success:', response);
+      // Başarılı durumda yapılacaklar (örn. navigate etme, mesaj gösterme)
+    } catch (error) {
+      console.error('Error:', error);
+      // Hata durumunda yapılacaklar (örn. hata mesajı gösterme)
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
-        <ScrollView >
-          <View style={styles.viewContainer}>
-            <Text style={styles.text}>Kayıt Ol</Text>
-            <FormField
-                title="Kullanıcı Adı"
-                value={form.email}
-                handleChangeText={(e)=>setForm({...form,
-                  username:e
-                })}
-                
-            />
-            <FormField
-                title="Email"
-                value={form.email}
-                handleChangeText={(e)=>setForm({...form,
-                  email:e
-                })}
-                keyboardType="email-address"
-            />
-            <FormField
-                title="Parola"
-                value={form.password}
-                handleChangeText={(e)=>setForm({...form,
-                  password:e
-                })}
-            />
-            <CustomButton
-                title='Kayıt Ol'
-                handlePress={submit}
-                isLoading={isSubmitting}
-
-            />
-        
-          </View>
-        </ScrollView>
-
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.text}>Kayıt Ol</Text>
+          <FormField
+            title="Kullanıcı Adı"
+            value={form.username}
+            handleChangeText={(e) => setForm({ ...form, username: e })}
+          />
+          <FormField
+            title="Email"
+            value={form.email}
+            handleChangeText={(e) => setForm({ ...form, email: e })}
+            keyboardType="email-address"
+          />
+          <FormField
+            title="Parola"
+            value={form.password}
+            handleChangeText={(e) => setForm({ ...form, password: e })}
+          />
+          <CustomButton
+            title='Kayıt Ol'
+            handlePress={submit}
+            isLoading={isSubmitting}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default SignUp
-
+export default SignUp;
 
 const styles = StyleSheet.create({
   SafeAreaViewContainer: {
-    backgroundColor: '#fff', // bg-primary eşdeğeri
-    flex: 1,                    // h-full eşdeğeri
+    backgroundColor: '#fff',
+    flex: 1,
   },
   viewContainer: {
-    width: '100%',           // w-full eşdeğeri
-    justifyContent: 'center', // flex'ın içeriğini yatayda ortalar
-    alignItems: 'center',     // flex'ın içeriğini dikeyde ortalar
-    height: '100%',          // h-full eşdeğeri
-    paddingHorizontal: 20,    // px-4 eşdeğeri
-    marginVertical: 30,       // my-6 eşdeğeri
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    paddingHorizontal: 20,
+    marginVertical: 30,
   },
   text: {
-    fontSize: 24,         
-    fontWeight: '600',    
-    color: '#000',        
-    marginTop: 120, 
-        
-   
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    marginTop: 120,
   },
   signupContainer: {
     flexDirection: 'row',
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
   signupLink: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#04364A', // text-secondary eşdeğeri
+    color: '#04364A',
     marginLeft: 5,
   },
-});
+})
