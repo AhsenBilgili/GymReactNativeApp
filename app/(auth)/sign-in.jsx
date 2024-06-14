@@ -1,11 +1,11 @@
-import { View, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView, StyleSheet } from 'react-native'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
-import { Link } from 'expo-router'
-import { fetchLogin } from '../../services/api';
-import { router } from 'expo-router'
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FormField from '../components/FormField';
+import CustomButton from '../components/CustomButton';
+import { Link, router } from 'expo-router';
+import { fetchLogin, storeToken } from '../../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -14,24 +14,23 @@ const SignIn = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Giriş işlemini gerçekleştiren fonksiyon
   const submit = async () => {
     setIsSubmitting(true);
     try {
-      // fetchLogin fonksiyonunu kullanarak giriş yap
       const response = await fetchLogin({
         email: form.email,
         password: form.password
       });
       console.log('Success:', response);
 
-      if(response.token){
-        router.push('/gyms')
+      if (response.token) {
+        await storeToken(response.token);
+        router.push('/gyms');
+      } else {
+        console.error('No token received in response:', response);
       }
-      // Başarılı durumda yapılacaklar (örn. navigate etme, mesaj gösterme)
     } catch (error) {
       console.error('Error:', error);
-      // Hata durumunda yapılacaklar (örn. hata mesajı gösterme)
     } finally {
       setIsSubmitting(false);
     }
@@ -49,9 +48,10 @@ const SignIn = () => {
             keyboardType="email-address"
           />
           <FormField
-            title="Password"
+            title="Şifre"
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
+            secureTextEntry
           />
           <CustomButton
             title='Giriş Yap'
@@ -60,7 +60,7 @@ const SignIn = () => {
           />
           <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Hesabın yok mu?</Text>
-            <Link href="/signup" style={styles.signupLink}>Kayıt Ol</Link>
+            <Link href="/sign-up" style={styles.signupLink}>Kayıt Ol</Link>
           </View>
         </View>
       </ScrollView>
@@ -68,29 +68,24 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
-
-
 const styles = StyleSheet.create({
   SafeAreaViewContainer: {
-    backgroundColor: '#fff', // bg-primary eşdeğeri
-    flex: 1,                    // h-full eşdeğeri
+    backgroundColor: '#fff',
+    flex: 1,
   },
   viewContainer: {
-    width: '100%',           // w-full eşdeğeri
-    justifyContent: 'center', // flex'ın içeriğini yatayda ortalar
-    alignItems: 'center',     // flex'ın içeriğini dikeyde ortalar
-    height: '100%',          // h-full eşdeğeri
-    paddingHorizontal: 20,    // px-4 eşdeğeri
-    marginVertical: 30,       // my-6 eşdeğeri
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    paddingHorizontal: 20,
+    marginVertical: 30,
   },
   text: {
-    fontSize: 24,         
-    fontWeight: '600',    
-    color: '#000',        
-    marginTop: 120, 
-        
-   
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    marginTop: 120,
   },
   signupContainer: {
     flexDirection: 'row',
@@ -105,7 +100,9 @@ const styles = StyleSheet.create({
   signupLink: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#04364A', // text-secondary eşdeğeri
+    color: '#04364A',
     marginLeft: 5,
   },
 });
+
+export default SignIn;

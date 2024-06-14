@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../constants/api.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const fetchData = async (url) => {
   try {
@@ -117,7 +118,24 @@ export const fetchLogin = async (userData) => {
     throw error;
   }
 };
+export const storeToken = async (token) => {
+  try {
+    await AsyncStorage.setItem('token', token);
+    console.log('Token başarıyla kaydedildi:', token);
+  } catch (error) {
+    console.error('Token kaydı sırasında hata:', error);
+  }
+};
 
+export const getToken = async () => {
+  try {
+    const savedToken = await AsyncStorage.getItem('token');
+    return savedToken;
+  } catch (error) {
+    console.error('Hafızadan token alırken hata:', error);
+    return null;
+  }
+};
 export const fetchLogout = async () => {
   const url = API_ENDPOINTS.LOGOUT;
 
@@ -139,3 +157,35 @@ export const fetchLogout = async () => {
     throw error;
   }
 };
+
+export const fetchProfile = async () => {
+  const token = await AsyncStorage.getItem('token');
+  const url = API_ENDPOINTS.USER_PROFILE_ME;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log('Profile Data:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching profile data:', error);
+    throw error;
+  }
+};
+
+
+
+
+
+

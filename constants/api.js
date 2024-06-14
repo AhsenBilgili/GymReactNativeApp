@@ -13,5 +13,5 @@ export const API_ENDPOINTS = {
   REGISTER:`${BASE_URL}/Account/register`,
   LOGIN:`${BASE_URL}/Account/login`,
   LOGOUT:`${BASE_URL}/Account/logout`,
-
+  USER_PROFILE_ME: `${BASE_URL}/UserProfile/me`, 
 };

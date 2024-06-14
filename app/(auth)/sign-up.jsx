@@ -1,9 +1,10 @@
-import { View, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView, StyleSheet } from 'react-native'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
-import { fetchRegister } from '../../services/api'; // fetchRegister fonksiyonunu doğru yol ile içe aktarın
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import FormField from '../components/FormField';
+import CustomButton from '../components/CustomButton';
+import { fetchRegister } from '../../services/api';
+import { router } from 'expo-router'; // router'ı doğru şekilde içe aktardık
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ const SignUp = () => {
     email: '',
     password: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
@@ -21,36 +23,63 @@ const SignUp = () => {
         email: form.email,
         password: form.password
       });
-      console.log('Success:', response);
+      console.log('Başarılı:', response);
       // Başarılı durumda yapılacaklar (örn. navigate etme, mesaj gösterme)
     } catch (error) {
-      console.error('Error:', error);
-      // Hata durumunda yapılacaklar (örn. hata mesajı gösterme)
+      console.error('Hata:', error);
+      if (error.response && error.response.status === 400 && error.response.data) {
+        const errorMessages = error.response.data;
+        let errorMessage = '';
+        for (const key in errorMessages) {
+          if (errorMessages.hasOwnProperty(key)) {
+            errorMessage += errorMessages[key][0] + '\n';
+          }
+        }
+        setErrorMessage(errorMessage);
+      } else {
+        setErrorMessage('Bilinmeyen bir hata oluştu');
+      }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const clearErrorMessage = () => {
+    setErrorMessage('');
+  };
+
+  const goToHomePage = () => {
+    router.push('/');
   };
 
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
       <ScrollView>
         <View style={styles.viewContainer}>
+          <TouchableOpacity onPress={goToHomePage} style={styles.homeButton}>
+            <Text style={styles.homeButtonText}>Ana Sayfa</Text>
+          </TouchableOpacity>
           <Text style={styles.text}>Kayıt Ol</Text>
+          {errorMessage ? (
+            <TouchableOpacity onPress={clearErrorMessage} style={styles.errorMessageContainer}>
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            </TouchableOpacity>
+          ) : null}
           <FormField
             title="Kullanıcı Adı"
             value={form.username}
-            handleChangeText={(e) => setForm({ ...form, username: e })}
+            handleChangeText={(e) => { setForm({ ...form, username: e }); clearErrorMessage(); }}
           />
           <FormField
             title="Email"
             value={form.email}
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            handleChangeText={(e) => { setForm({ ...form, email: e }); clearErrorMessage(); }}
             keyboardType="email-address"
           />
           <FormField
             title="Parola"
             value={form.password}
-            handleChangeText={(e) => setForm({ ...form, password: e })}
+            handleChangeText={(e) => { setForm({ ...form, password: e }); clearErrorMessage(); }}
           />
           <CustomButton
             title='Kayıt Ol'
@@ -82,22 +111,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     color: '#000',
-    marginTop: 120,
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 20,
   },
-  signupText: {
-    fontSize: 16,
-    color: '#000',
+  homeButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
   },
-  signupLink: {
+  homeButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#04364A',
-    marginLeft: 5,
+    color: '#007BFF',
   },
-})
+  errorMessageContainer: {
+    backgroundColor: '#ffcccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  errorMessage: {
+    color: 'red',
+    fontSize: 16,
+  },
+});
