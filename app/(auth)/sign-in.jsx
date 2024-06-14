@@ -1,80 +1,91 @@
-import { View, Text, ScrollView } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView, StyleSheet } from 'react-native'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
-import { Link } from 'expo-router'
-
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FormField from '../components/FormField';
+import CustomButton from '../components/CustomButton';
+import { Link, router } from 'expo-router';
+import { fetchLogin, storeToken } from '../../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignIn = () => {
-  const [form,setForm]=useState({
+  const [form, setForm] = useState({
+    email: '',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    email:'',
-    password:''
-  })
-  const [isSubmitting, setisSubmitting] = useState(false)
-  const submit=()=>{}
+  const submit = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetchLogin({
+        email: form.email,
+        password: form.password
+      });
+      console.log('Success:', response);
+
+      if (response.token) {
+        await storeToken(response.token);
+        router.push('/gyms');
+      } else {
+        console.error('No token received in response:', response);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.SafeAreaViewContainer}>
-        <ScrollView >
-          <View style={styles.viewContainer}>
-            <Text style={styles.text}>Giriş Yap</Text>
-           
-            <FormField
-                title="Email"
-                value={form.email}
-                handleChangeText={(e)=>setForm({...form,
-                  email:e
-                })}
-                keyboardType="email-address"
-            />
-            <FormField
-                title="Password"
-                value={form.password}
-                handleChangeText={(e)=>setForm({...form,
-                  password:e
-                })}
-            />
-            <CustomButton
-                title='Giriş Yap'
-                handlePress={submit}
-                isLoading={isSubmitting}
-
-            />
-            <View style={styles.signupContainer}>
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.text}>Giriş Yap</Text>
+          <FormField
+            title="Email"
+            value={form.email}
+            handleChangeText={(e) => setForm({ ...form, email: e })}
+            keyboardType="email-address"
+          />
+          <FormField
+            title="Şifre"
+            value={form.password}
+            handleChangeText={(e) => setForm({ ...form, password: e })}
+            secureTextEntry
+          />
+          <CustomButton
+            title='Giriş Yap'
+            handlePress={submit}
+            isLoading={isSubmitting}
+          />
+          <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Hesabın yok mu?</Text>
-            <Text style={styles.signupLink}>Kayıt Ol</Text>
+            <Link href="/sign-up" style={styles.signupLink}>Kayıt Ol</Link>
           </View>
-          </View>
-        </ScrollView>
-
+        </View>
+      </ScrollView>
     </SafeAreaView>
-  )
-}
-
-export default SignIn
-
+  );
+};
 
 const styles = StyleSheet.create({
   SafeAreaViewContainer: {
-    backgroundColor: '#fff', // bg-primary eşdeğeri
-    flex: 1,                    // h-full eşdeğeri
+    backgroundColor: '#fff',
+    flex: 1,
   },
   viewContainer: {
-    width: '100%',           // w-full eşdeğeri
-    justifyContent: 'center', // flex'ın içeriğini yatayda ortalar
-    alignItems: 'center',     // flex'ın içeriğini dikeyde ortalar
-    height: '100%',          // h-full eşdeğeri
-    paddingHorizontal: 20,    // px-4 eşdeğeri
-    marginVertical: 30,       // my-6 eşdeğeri
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    paddingHorizontal: 20,
+    marginVertical: 30,
   },
   text: {
-    fontSize: 24,         
-    fontWeight: '600',    
-    color: '#000',        
-    marginTop: 120, 
-        
-   
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    marginTop: 120,
   },
   signupContainer: {
     flexDirection: 'row',
@@ -89,7 +100,9 @@ const styles = StyleSheet.create({
   signupLink: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#04364A', // text-secondary eşdeğeri
+    color: '#04364A',
     marginLeft: 5,
   },
 });
+
+export default SignIn;

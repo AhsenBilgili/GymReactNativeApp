@@ -5,14 +5,7 @@ import { icons } from '../../constants';
 const TabIcon = ({ icon, color, name, focused }) => {
     return (
         <View style={styles.iconContainer}>
-            {/* <Image
-                source={icon}
-                resizeMode='contain'
-                style={[
-                    styles.icon,
-                    { tintColor: color },
-                ]}
-            /> */}
+         
             <Text style={[styles.text, focused && styles.focusedText, { color }]}>
                 {name}
             </Text>

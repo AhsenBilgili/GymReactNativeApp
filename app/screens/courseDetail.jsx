@@ -45,12 +45,14 @@ const CourseDetail = () => {
       <Text style={styles.definition}>{course.specialCourseDefinition}</Text>
       
       <Text style={styles.heading}>Antrenörler</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {trainers.map((trainer, index) => (
-      <View key={index} style={styles.trainerContainer}>
-        <Image source={{ uri: trainer.trainerImageUrl }} style={styles.trainerImage} />
-        <Text style={styles.trainerName}>{trainer.trainerName}</Text>
-      </View>
-    ))}
+        <View key={index} style={styles.trainerContainer}>
+          <Image source={{ uri: trainer.trainerImageUrl }} style={styles.trainerImage} />
+          <Text style={styles.trainerName}>{trainer.trainerName}</Text>
+        </View>
+      ))}
+    </ScrollView>
     </ScrollView>
   );
 };

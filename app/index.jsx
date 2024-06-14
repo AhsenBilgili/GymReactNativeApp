@@ -1,38 +1,32 @@
-
-import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, View,Image } from 'react-native';
-import { Link,router } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import { Link, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {images} from '../constants';
+import { images } from '../constants';
 import CustomButton from './components/CustomButton';
 
 export default function App() {
   return (
-    <SafeAreaView >
-        <ScrollView contentContainerStyle={{height:'100%', backgroundColor:'#fff'}}>
-            <View style={styles.container}>
-            <Text style={styles.logoText}>GYMY</Text>
-
-                <Image
-                    source={images.login}
-                />
-            </View>
-            <View style={styles.buttonContainer}>
-            <CustomButton
-              title="Giriş Yap"
-              containerStyle={[styles.button, { width: '100%' }]}
-              handlePress={() => router.push('/sign-in')}
-            />
-            <CustomButton
-              title="Kayıt Ol"
-              containerStyle={[styles.button, { width: '100%', marginTop: 30 }]}
-              handlePress={() => router.push('/sign-up')}            />
-                 <Link href="/gyms">
-            <Text>Tabları Göster</Text>
-          </Link>
+    <SafeAreaView>
+      <ScrollView contentContainerStyle={{ height: '100%', backgroundColor: '#fff' }}>
+        <View style={styles.container}>
+          <Text style={styles.logoText}>GYMY</Text>
+          <Image source={images.login} />
         </View>
-     
-        </ScrollView>
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            title="Giriş Yap"
+            containerStyle={[styles.button, { width: '100%' }]}
+            handlePress={() => router.push('/sign-in')}
+          />
+          <CustomButton
+            title="Kayıt Ol"
+            containerStyle={[styles.button, { width: '100%', marginTop: 30 }]}
+            handlePress={() => router.push('/sign-up')}
+          />
+          <Link href="/gyms"></Link>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -49,8 +43,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   buttonContainer: {
-    marginBottom:60,
+    marginBottom: 60,
     paddingHorizontal: 40,
-    
   },
 });
